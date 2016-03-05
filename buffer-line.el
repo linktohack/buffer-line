@@ -84,24 +84,16 @@
 (defun buffer-line/next-buffer (&optional count)
   "Next normal buffer."
   (interactive "p")
-  (dotimes (or count 1)
-    (unless (= 1 (length (buffer-line/buffer-list)))
-      (while
-          (progn
-            (next-buffer)
-            (not (buffer-line/normalp (buffer-name)))))
+  (let* ((list (buffer-line/buffer-list))
+         (len (length list)))
+    (unless (<= len 1)
+      (switch-to-buffer (nth (mod (or count 1) len) list))
       (buffer-line/show))))
 
 (defun buffer-line/previous-buffer (&optional count)
   "Previous normal buffer."
   (interactive "p")
-  (dotimes (or count 1)
-    (unless (= 1 (length (buffer-line/buffer-list)))
-      (while
-          (progn
-            (previous-buffer)
-            (not (buffer-line/normalp (buffer-name)))))
-      (buffer-line/show))))
+  (buffer-line/next-buffer (- (or count 1))))
 
 (defun buffer-line/show ()
   "Show buffer line."
