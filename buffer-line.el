@@ -98,11 +98,14 @@
 (defun buffer-line/show ()
   "Show buffer line."
   (unless (minibufferp)
-    (let ((message-log-max nil)
-          (list (cl-loop for buff in (buffer-line/buffer-list)
-                         for index from 0
-                         collect (format "%d: %s" index buff))))
-      (message "%s" (mapconcat #'identity list " | ")))))
+    (let* ((message-log-max nil)
+           (list (cl-loop for buff in (buffer-line/buffer-list)
+                          for index from 0
+                          collect (format "%d: %s" index buff)))
+           (line (mapconcat #'identity list " | ")))
+      (message (if (> (length line) (frame-width))
+                   (format "%s..." (substring line 0 (- (frame-width) 3)))
+                 line)))))
 
 (defun buffer-line/schedule-timer ()
   (interactive)
