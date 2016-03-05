@@ -6,8 +6,8 @@
   #+BEGIN_SRC emacs-lisp
     (use-package buffer-line
       :load-path "~/Dropbox/ProjectWeekends/lisp/buffer-line"
-      :init
-      (bind-key "gb" #'buffer-line/next-buffer evil-motion-state-map))
+      :init (bind-key "gb" #'buffer-line/next-buffer evil-motion-state-map)
+      :config (buffer-line-mode 1))
   #+END_SRC
 
   from there
