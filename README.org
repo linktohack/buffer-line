@@ -1,6 +1,7 @@
 * What?
   A picture worth a thousands words.
-  [[file:screenshot.png]]
+  [[file:screenshot_echo-area.png]]
+  [[file:screenshot_mode-line.png]]
 
 * How?
   #+BEGIN_SRC emacs-lisp
