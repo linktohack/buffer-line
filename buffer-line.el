@@ -48,12 +48,10 @@
 (defcustom buffer-line-idle-delay 0.5
   "Timer delay.")
 
-(defcustom buffer-line-special-buffer-regexp
-  '("\\*scratch\\*")
+(defcustom buffer-line-special-buffer-regexp '("\\*scratch\\*")
   "Special buffer to display.")
 
-(defcustom buffer-line-place
-  'echo-area
+(defcustom buffer-line-place 'echo-area
   "Place to put buffer-line.
 
 Acceptable value: `nil' or `echo-area', `mode-line'.")

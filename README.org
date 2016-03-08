@@ -6,8 +6,12 @@
   #+BEGIN_SRC emacs-lisp
     (use-package buffer-line
       :load-path "~/Dropbox/ProjectWeekends/lisp/buffer-line"
-      :init (bind-key "gb" #'buffer-line/next-buffer evil-motion-state-map)
-      :config (buffer-line-mode 1))
+      :init
+      (setq buffer-line-place 'mode-line)    ; Acceptable value: `nil' or `echo-area', `mode-line'
+      (setq buffer-line-mode-line-limit 60)  ; In case of `mode-line'.
+      (bind-key ",b" #'buffer-line/next-buffer evil-motion-state-map)
+      :config
+      (buffer-line-mode 1))
   #+END_SRC
 
   from there
