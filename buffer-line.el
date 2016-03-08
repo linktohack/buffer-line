@@ -57,7 +57,7 @@
 
 (defun buffer-line/list ()
   "List of normal buffers."
-  (if (not (active-minibuffer-window))
+  (if (not (minibufferp))
       (let ((current (buffer-name))
             next all)
         (push current all)
@@ -72,7 +72,7 @@
         (nreverse all))
     (unwind-protect
         (save-window-excursion
-          (other-window)
+          (other-window 1)
           (buffer-line/list)))))
 
 (defun buffer-line/string (&optional limit)
