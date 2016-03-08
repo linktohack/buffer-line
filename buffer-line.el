@@ -52,8 +52,17 @@
   '("\\*scratch\\*")
   "Special buffer to display.")
 
+(defcustom buffer-line-place
+  'echo-area
+  "Place to put buffer-line.
+
+Acceptable value: `nil' or `echo-area', `mode-line'.")
+
 (defvar buffer-line--timer nil
   "Timer variable.")
+
+(defvar buffer-line--saved-lighter nil
+  "Saved lighter.")
 
 (defun buffer-line/list ()
   "List of normal buffers."
@@ -112,9 +121,20 @@
 
 (defun buffer-line/show (&optional place)
   "Show buffer line."
+  (setq place (or place buffer-line-place))
   (cond
-   ;; default is echo area
-   (t
+   ;; mode-line
+   ((eq place 'mode-line)
+    (let ((mode (assq 'buffer-line-mode minor-mode-alist)))
+      (unless buffer-line--saved-lighter
+        (setq buffer-line--saved-lighter (cdr mode)))
+      (setcdr mode `(,(concat " [" (buffer-line/string 40) "]")))))
+   ;; echo-area
+   ((eq place 'echo-area)
+    (when buffer-line--saved-lighter
+      (let ((mode (assq 'buffer-line-mode minor-mode-alist)))
+        (setcdr mode buffer-line--saved-lighter)
+        (setq buffer-line--saved-lighter nil)))
     (unless (or cursor-in-echo-area
                 (active-minibuffer-window))
       (let ((message-log-max nil))
