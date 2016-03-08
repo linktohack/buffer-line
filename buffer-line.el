@@ -53,7 +53,7 @@
   "Special buffer to display.")
 
 (defvar buffer-line--timer nil
-  "Timer variable")
+  "Timer variable.")
 
 (defun buffer-line/buffer-list ()
   "List of normal buffers."
@@ -97,7 +97,8 @@
 
 (defun buffer-line/show ()
   "Show buffer line."
-  (unless (minibufferp)
+  (unless (or cursor-in-echo-area
+              (active-minibuffer-window))
     (let* ((message-log-max nil)
            (list (cl-loop for buff in (buffer-line/buffer-list)
                           for index from 0
