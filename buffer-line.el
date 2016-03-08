@@ -58,6 +58,12 @@
 
 Acceptable value: `nil' or `echo-area', `mode-line'.")
 
+(defcustom buffer-line-mode-line-limit 40
+  "Limit values for `mode-line'.")
+
+(defcustom buffer-line-include-current-buffer nil
+  "Should `buffer-line' include the current buffer.")
+
 (defvar buffer-line--timer nil
   "Timer variable.")
 
@@ -69,7 +75,8 @@ Acceptable value: `nil' or `echo-area', `mode-line'.")
   (if (not (minibufferp))
       (let ((current (buffer-name))
             next all)
-        (push current all)
+        (when buffer-line-include-current-buffer
+          (push current all))
         (while
             (progn
               (next-buffer)
@@ -87,7 +94,7 @@ Acceptable value: `nil' or `echo-area', `mode-line'.")
 (defun buffer-line/string (&optional limit)
   "String representation of buffer-line's list."
   (let* ((list (cl-loop for buff in (buffer-line/list)
-                        for index from 0
+                        for index from (if buffer-line-include-current-buffer 0 1)
                         collect (format "%d: %s" index buff)))
          (line (mapconcat #'identity list " | ")))
     (if (and limit
@@ -128,7 +135,9 @@ Acceptable value: `nil' or `echo-area', `mode-line'.")
     (let ((mode (assq 'buffer-line-mode minor-mode-alist)))
       (unless buffer-line--saved-lighter
         (setq buffer-line--saved-lighter (cdr mode)))
-      (setcdr mode `(,(concat " [" (buffer-line/string 40) "]")))))
+      (setcdr mode `(,(concat " ["
+                              (buffer-line/string buffer-line-mode-line-limit)
+                              "]")))))
    ;; echo-area
    ((eq place 'echo-area)
     (when buffer-line--saved-lighter
