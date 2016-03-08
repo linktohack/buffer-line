@@ -55,21 +55,36 @@
 (defvar buffer-line--timer nil
   "Timer variable.")
 
-(defun buffer-line/buffer-list ()
+(defun buffer-line/list ()
   "List of normal buffers."
-  (let ((current (buffer-name))
-        next all)
-    (push current all)
-    (save-window-excursion
-      (while
-          (progn
-            (next-buffer)
-            (setq next (buffer-name))
-            (when (and (not (string= next current))
-                       (buffer-line/normalp next))
-              (push next all))
-            (not (string= next current)))))
-    (nreverse all)))
+  (if (not (active-minibuffer-window))
+      (let ((current (buffer-name))
+            next all)
+        (push current all)
+        (while
+            (progn
+              (next-buffer)
+              (setq next (buffer-name))
+              (when (and (not (string= next current))
+                         (buffer-line/normalp next))
+                (push next all))
+              (not (string= next current))))
+        (nreverse all))
+    (unwind-protect
+        (save-window-excursion
+          (other-window)
+          (buffer-line/list)))))
+
+(defun buffer-line/string (&optional limit)
+  "String representation of buffer-line's list."
+  (let* ((list (cl-loop for buff in (buffer-line/list)
+                        for index from 0
+                        collect (format "%d: %s" index buff)))
+         (line (mapconcat #'identity list " | ")))
+    (if (and limit
+             (< limit (length line)))
+        (format "%s..." (substring line 0 (- limit 3)))
+      line)))
 
 (defun buffer-line/normalp (name)
   "Whether a buffer is normal (.i.e. not special.)"
@@ -84,7 +99,7 @@
 (defun buffer-line/next-buffer (&optional count)
   "Next normal buffer."
   (interactive "p")
-  (let* ((list (buffer-line/buffer-list))
+  (let* ((list (buffer-line/list))
          (len (length list)))
     (unless (<= len 1)
       (switch-to-buffer (nth (mod (or count 1) len) list))
@@ -95,18 +110,15 @@
   (interactive "p")
   (buffer-line/next-buffer (- (or count 1))))
 
-(defun buffer-line/show ()
+(defun buffer-line/show (&optional place)
   "Show buffer line."
-  (unless (or cursor-in-echo-area
-              (active-minibuffer-window))
-    (let* ((message-log-max nil)
-           (list (cl-loop for buff in (buffer-line/buffer-list)
-                          for index from 0
-                          collect (format "%d: %s" index buff)))
-           (line (mapconcat #'identity list " | ")))
-      (message (if (> (length line) (frame-width))
-                   (format "%s..." (substring line 0 (- (frame-width) 3)))
-                 line)))))
+  (cond
+   ;; default is echo area
+   (t
+    (unless (or cursor-in-echo-area
+                (active-minibuffer-window))
+      (let ((message-log-max nil))
+        (message (buffer-line/string (frame-width))))))))
 
 (defun buffer-line/schedule-timer ()
   (interactive)
