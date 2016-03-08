@@ -113,8 +113,11 @@ Acceptable value: `nil' or `echo-area', `mode-line'.")
 (defun buffer-line/next-buffer (&optional count)
   "Next normal buffer."
   (interactive "p")
-  (let* ((list (buffer-line/list))
-         (len (length list)))
+  (let ((list (buffer-line/list))
+        len)
+    (unless buffer-line-include-current-buffer
+      (push (buffer-name) list))
+    (setq len (length list))
     (unless (<= len 1)
       (switch-to-buffer (nth (mod (or count 1) len) list))
       (buffer-line/show))))
