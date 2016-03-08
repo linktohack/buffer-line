@@ -129,23 +129,23 @@ Acceptable value: `nil' or `echo-area', `mode-line'.")
 (defun buffer-line/show (&optional place)
   "Show buffer line."
   (setq place (or place buffer-line-place))
-  (cond
-   ;; mode-line
-   ((eq place 'mode-line)
-    (let ((mode (assq 'buffer-line-mode minor-mode-alist)))
-      (unless buffer-line--saved-lighter
-        (setq buffer-line--saved-lighter (cdr mode)))
-      (setcdr mode `(,(concat " ["
-                              (buffer-line/string buffer-line-mode-line-limit)
-                              "]")))))
-   ;; echo-area
-   ((eq place 'echo-area)
-    (when buffer-line--saved-lighter
+  (unless (or cursor-in-echo-area
+              (active-minibuffer-window))
+    (cond
+     ;; mode-line
+     ((eq place 'mode-line)
       (let ((mode (assq 'buffer-line-mode minor-mode-alist)))
-        (setcdr mode buffer-line--saved-lighter)
-        (setq buffer-line--saved-lighter nil)))
-    (unless (or cursor-in-echo-area
-                (active-minibuffer-window))
+        (unless buffer-line--saved-lighter
+          (setq buffer-line--saved-lighter (cdr mode)))
+        (setcdr mode `(,(concat " ["
+                                (buffer-line/string buffer-line-mode-line-limit)
+                                "]")))))
+     ;; echo-area
+     ((eq place 'echo-area)
+      (when buffer-line--saved-lighter
+        (let ((mode (assq 'buffer-line-mode minor-mode-alist)))
+          (setcdr mode buffer-line--saved-lighter)
+          (setq buffer-line--saved-lighter nil)))
       (let ((message-log-max nil))
         (message (buffer-line/string (frame-width))))))))
 
