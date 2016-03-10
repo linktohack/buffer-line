@@ -170,7 +170,8 @@ Acceptable value: `nil' or `echo-area', `mode-line'.")
             map)
   (if buffer-line-mode
       (buffer-line/schedule-timer)
-    (cancel-timer buffer-line--timer)
-    (setq buffer-line--timer nil)))
+    (when buffer-line--timer
+      (cancel-timer buffer-line--timer)
+      (setq buffer-line--timer nil))))
 
 (provide 'buffer-line)
