@@ -1,5 +1,5 @@
 * What?
-  A picture worth a thousands words.
+  A picture worths a thousand words.
   [[file:screenshot_echo-area.png]]
   [[file:screenshot_mode-line.png]]
 
